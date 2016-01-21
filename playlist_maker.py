@@ -1,7 +1,7 @@
 ###
 ##
-#Websites that I used
-#http://willdrevo.com/projects/
+#Website tutorial that I used
+#http://willdrevo.com/downloading-youtube-and-soundcloud-audio-with-python-and-pandas//
 #
 #
 ##
@@ -17,12 +17,12 @@ import os
 ID = 'Playlistmaker'
 NUM_POSTS = 25
 VALID_SITES = [
-	"youtube", 
+	"youtube.com", 
 	"youtu.be",
-	"vimeo", 
-	"soundcloud",
-	"bandcamp",
-	"mixcloud"
+	"vimeo.com", 
+	"soundcloud.com",
+	"bandcamp.com",
+	"mixcloud.com"
 ]
 YOUTUBE_OPTIONS = {
     'format': 'bestaudio/best', 						# choice of quality
@@ -42,21 +42,18 @@ def DownloadableURL(str):
 #main
 try:
 	#welcome user and ask for a name for the playlist
+	print('Hello. This program will download the video links of the front page of a subreddit as .mp3 files.')
 	subreddit_name = input("Which subreddit would you like? /r/")
 	target_dir 	   = input("Folder name to put files in: ")
 	print("Ok. Preparing.")
 
-	#make a new folder.
-	os.makedirs(target_dir)
-	os.chdir(target_dir)
-
 	#setup reddit. Gets the subreddit and collects the top posts
 	post_list = praw.Reddit(ID).get_subreddit(subreddit_name).get_hot(limit = NUM_POSTS)
-	print('Reddit ready')
+	print('[playlist maker] Reddit ready')
 
 	#setup youtube 
 	youtube = youtube_dl.YoutubeDL(YOUTUBE_OPTIONS)
-	print('Youtube ready')
+	print('[playlist maker] Youtube ready')
 
 	#make a list of urls that can have a video downloaded from
 	compatable_urls = []
@@ -64,9 +61,20 @@ try:
 		if DownloadableURL(post.url):
 			compatable_urls.append(post.url)
 
+	#make a new folder.
+	if not os.path.exists(target_dir):
+	    os.makedirs(target_dir)
+	    print('[playlist maker] new folder ' + target_dir + ' made')
+	os.chdir(target_dir)
+ 
 	#download the videos
-	print('Downloading')
-	youtube.download(compatable_urls)
+	print('[playlist maker] Downloading')
+	for url in compatable_urls:
+		try:
+			youtube.download([url])
+		except:
+			print("[playlist maker] Couldn't get this video.")
+
 
 except:
 	print('Error, sorry')
